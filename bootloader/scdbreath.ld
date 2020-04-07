@@ -22,32 +22,8 @@ SECTIONS
 	. = ALIGN(0x200);
 	PROVIDE(__BOOT_SECTOR_END = .);
 
-	. = 0xC0000000;
+	.text : {}
 
-	.text :
-	{
-		*(.text)
-	}
-
-	.rodata :
-	{
-		*(.rodata)
-	}
-
-	.data :
-	{
-		*(.data)
-	}
-
-	.bss :
-	{
-		*(.bss)
-	}
-	
-	/* 
-	** Be clean with the used sections in bootloader for now 
-	** if non declared at top level -> DISCARDED
-	*/
 	/DISCARD/:
 	{ 
 		*(*)

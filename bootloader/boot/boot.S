@@ -1,9 +1,13 @@
 .code16
 
-BOOTSEG  = 0x0
-MAGICMBR = 0xAA55
+.equ BOOTSEG,  0x0
+.equ MAGICMBR, 0xAA55
 
-RELOCATED = 0x0600
+.equ RELOCATED, 0x0600
+
+.equ PARTSTART, 0x430
+.equ PARTNBR,   0x4
+.equ PARTSIZE,  0x10
 
 .section .bootsector, "ax"
 
@@ -42,7 +46,7 @@ _bootsector:
     int $0x10
 
     movw $0x600, %ax
-    movb $0x3, %bh
+    movb $0x7, %bh
     xorw %cx, %cx
     movw $0x184F, %dx
     int $0x10
@@ -54,19 +58,82 @@ _bootsector:
     movw $_bootmsg, %si
     call bprintstr
 
-    xorw %ax, %ax
-    int  $0x16
+    xorw %cx, %cx
+    movw $0x430, %bp # yes its the lastest register we got X)
+    xorw %bx, %bx
+
+dump_partition:
+    pushw %bp
+    cmpb $0x80, (%bp)
+    jne printBasePart
+    movb $0x1, bpartactive
+
+    printBasePart:
+        movw $_partbase, %si
+        call bprintstr
+        movb $0xE, %ah
+        movb %cl, %al
+        addb $0x31, %al
+        int $0x10
+
+        cmpb $0x1, bpartactive 
+        jne endOfPartX
+
+    printActive:
+        mov $_active, %si
+        call bprintstr
+
+    endOfPartX:
+        movb $0x0, bpartactive
+        popw %bp
+        addw PARTSIZE, %bp
+        incw %cx
+        cmpw $PARTNBR, %cx
+        jne dump_partition
+
+    xorw %si, %si
+user_boot:
+    mov $0x2, %ah
+    mov $0x0, %bh
+    mov %si, %dx
+    imulw $0x100, %dx
+    addw $(0x100 * 6 + 7), %dx
+    int $0x10
+
+    mov $0x0, %ah
+    int $0x16
+
+    cmp $0x011B, %ax # escape
+    je bioskill
+
+    cmp $0x1C0D, %ax # enter
+    je booting
+
+    cmp $0x4800, %ax # up arrow
+    je moveup
+
+    cmp $0x5000, %ax # down arrow
+    je movedown
+
+    jmp user_boot
+
+    movedown:
+        cmpw $0x3, %si
+        je user_boot
+        addw $0x1, %si
+        jmp user_boot
+
+    moveup:
+        cmpw $0x0, %si
+        je user_boot
+        subw $-0x1, %si
+        jmp user_boot
+
+
+booting:
 
 .hang:
     jmp .hang
-
-booterror:
-    call bprintstr
-    mov $_booterror, %si
-    call bprintstr
-    xorw %ax, %ax
-    int $0x16
-    jmp bioskill
 
 bprintstr:
     lodsb
@@ -83,10 +150,10 @@ bioskill:
     int $0x19 # BIOS poweroff
     ljmp $0xf000,$0xfff0 # case error reset code
 
-_bootmsg: .asciz " *\r\n* Lightbeam legacy bootloader\r\n *\r\n\n"
-
-_booterror_rd: .asciz "\n\rRead disk sectors failed..."
-_booterror:    .asciz " Press any key to reboot\n\r"
+_bootmsg:  .asciz " *\r\n* SecondBreath bootloader\r\n *\r\n\n\n"
+_partbase: .asciz "\r\n         Partition "
+_active:   .asciz " (BOOTABLE)"
+bpartactive: .byte 0x0
 
 .fill 510-(.-_bootsector), 1, 0
 

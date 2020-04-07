@@ -1,6 +1,6 @@
 # SecondBreath
 
-x86 bootloader wroten in GNU syntax assembly.
+x86 MBR bootloader wroten in GNU syntax assembly.
 
 Because we are not savage and `org` keyword isn't implemented on GNU assembly we need a linker script.
 
