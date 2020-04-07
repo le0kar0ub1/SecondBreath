@@ -14,7 +14,7 @@ OBJEXT		:=	.o
 
 ASMEXT		:=	.S
 
-LINKER		:=	bootloader/scdbreath.ld
+LINKER		:=	bootsector/scdbreath.ld
 
 RAWBIN		:=	scdbreath.bin
 
@@ -23,9 +23,9 @@ LNKFLAGS	:=	-n					\
 				-o $(RAWBIN)		\
 				--oformat binary
 
-SRCDIR		:=	$(addprefix bootloader/,	\
-							boot)
-							#bootools		\
+SRCDIR		:=	$(addprefix bootsector/, 	\
+							boot			\
+							bootools		\
 							scdbreath		\
 				)
 
