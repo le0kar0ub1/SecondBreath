@@ -3,6 +3,8 @@
 BOOTSEG  = 0x0
 MAGICMBR = 0xAA55
 
+RELOCATED = 0x0600
+
 .section .bootsector, "ax"
 
 .global _bootsector
@@ -19,14 +21,23 @@ _bootsector:
     movw %ax, %gs
     xorw %sp, %sp
     cld
+    cli
 
     mov $__BOOT_SECTOR_START, %sp
+
+    mov $0x7C00, %si
+    mov $RELOCATED, %di
+    mov $0x0200, %cx
+    rep movsb
+
+    jmp over + RELOCATED
+
+.equ over, . - 0x7C00
 
     pushl %edx # bios value
 
     sti
 
-.if scdbreath == 0
     mov $0x3, %ax
     int $0x10
 
@@ -39,7 +50,6 @@ _bootsector:
     mov $0x103, %ax
     mov $0x105, %cx
     int $0x10
-.endif
 
     movw $_bootmsg, %si
     call bprintstr
