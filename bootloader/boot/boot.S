@@ -38,18 +38,14 @@ _bootsector:
 
 .equ over, . - 0x7C00
 
-    pushl %edx # bios value
+    pushw %dx # bios value
 
     sti
 
     mov $0x3, %ax
     int $0x10
 
-    movw $0x600, %ax
-    movb $0x7, %bh
-    xorw %cx, %cx
-    movw $0x184F, %dx
-    int $0x10
+    call biosCleanScreen
 
     mov $0x103, %ax
     mov $0x105, %cx
@@ -59,9 +55,10 @@ _bootsector:
     call bprintstr
 
     xorw %cx, %cx
-    movw $0x430, %bp # yes its the lastest register we got X)
+    movw $(0x430 + RELOCATED), %bp # yes its the lastest register we got X)
     xorw %bx, %bx
 
+    movb $0x1, bpartactive
 dump_partition:
     pushw %bp
     cmpb $0x80, (%bp)
@@ -104,7 +101,7 @@ user_boot:
     int $0x16
 
     cmp $0x011B, %ax # escape
-    je bioskill
+    je biosKill
 
     cmp $0x1C0D, %ax # enter
     je booting
@@ -120,17 +117,47 @@ user_boot:
     movedown:
         cmpw $0x3, %si
         je user_boot
-        addw $0x1, %si
+        inc %si
         jmp user_boot
 
     moveup:
         cmpw $0x0, %si
         je user_boot
-        subw $-0x1, %si
+        dec %si
         jmp user_boot
 
 
 booting:
+    pushw %si
+.if $scdbreath == 1
+    jmp _scdbreath
+.endif
+    mov $0x2, %ah
+    mov $0x0, %dx
+    int $0x10
+
+    call biosCleanScreen
+
+    mov (430 + RELOCATED), %bp
+    popw %si
+    shlw $4, %si
+    addw %si, %bp
+
+    popw %dx
+    movb %dl, (%bp)
+
+    push %bp
+    movb $0x0, 0x10(%bp)
+    movb $0x5, 0x11(%bp)
+
+
+    /* READ OUR SECTOR */
+    mov $0x41, %ah
+    mov $0x55AA, %bx
+    int $0x13
+
+read_sector:
+
 
 .hang:
     jmp .hang
@@ -146,13 +173,31 @@ bprintstr:
 .bendprint:
     ret
 
-bioskill:
+perror:
+    mov $_error, %si
+    call bprintstr
+reDie:
+    xorb %ah, %ah
+    int $0x10
+    cmp $0x011B, %ax
+    jne reDie
+
+biosKill:
     int $0x19 # BIOS poweroff
     ljmp $0xf000,$0xfff0 # case error reset code
+
+biosCleanScreen:
+    movw $0x600, %ax
+    movb $0x7, %bh
+    xorw %cx, %cx
+    movw $0x184F, %dx
+    int $0x10
+    ret
 
 _bootmsg:  .asciz " *\r\n* SecondBreath bootloader\r\n *\r\n\n\n"
 _partbase: .asciz "\r\n         Partition "
 _active:   .asciz " (BOOTABLE)"
+_error:    .asciz "Error occcured"
 bpartactive: .byte 0x0
 
 .fill 510-(.-_bootsector), 1, 0

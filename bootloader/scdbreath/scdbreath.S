@@ -26,7 +26,8 @@
 .section .text.boot, "ax"
 
 _scdbreath:
-    popl %edx
+    popw %ax # partitio n
+    popw %dx # drive nbr
     movl %edx, drive_number
 
     call _enableA20
