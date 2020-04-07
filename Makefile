@@ -8,24 +8,24 @@ GAS 		:=	as
 
 LNK			:=	ld
 
-GASFLAGS	:=
+GASFLAGS	=
 
 OBJEXT		:=	.o
 
 ASMEXT		:=	.S
 
-LINKER		:=	scdbreath.ld
+LINKER		:=	bootloader/scdbreath.ld
 
 RAWBIN		:=	scdbreath.bin
 
 LNKFLAGS	:=	-n					\
-				-T	$(LINKER)		\
+				-T $(LINKER)		\
 				-o $(RAWBIN)		\
-				--oformat binary	\
+				--oformat binary
 
 SRCDIR		:=	$(addprefix bootloader/,	\
-							boot			\
-							bootools		\
+							boot)
+							#bootools		\
 							scdbreath		\
 				)
 
@@ -34,7 +34,7 @@ SOURCES		:=	$(wildcard $(addsuffix /*$(ASMEXT), $(SRCDIR)))
 OBJECTS		:=	$(patsubst %$(ASMEXT), $(BUILD)/%$(OBJEXT), $(SOURCES))
 
 
-all:	$(RAWBIN)
+all:	checkup	$(RAWBIN)
 
 clean:
 	@rm -rf	$(BUILD)
@@ -42,8 +42,10 @@ clean:
 fclean:	clean
 	@rm -f	$(RAWBIN)
 
-run:
+run:	re
 	qemu-system-i386 $(RAWBIN)
+
+re:	fclean	all
 
 $(RAWBIN):	$(OBJECTS)
 	@$(LNK) $(LNKFLAGS) $(OBJECTS)
@@ -53,3 +55,12 @@ $(BUILD)/%$(OBJEXT): %$(ASMEXT)
 	@mkdir -p $(shell dirname $@)
 	@$(GAS) $(GASFLAGS) -c $< -o $@
 	@-echo "    AS    $@"
+
+checkup:
+ifeq ($(lvl), core)
+    GASFLAGS	+= --defsym scdbreath=0
+else ifeq ($(lvl), scdbreath)
+    GASFLAGS	+= --defsym scdbreath=1
+else
+    GASFLAGS	+= --defsym	scdbreath=0
+endif

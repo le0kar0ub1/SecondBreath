@@ -44,16 +44,7 @@ lba_rd_struct:
     .lba_address_low:  .long 0
     .lba_address_high: .long 0
 
-// ********************************************
-//     Reads multiple LBA addressed sectors
-// ********************************************
 
-// IN:
-// EAX = LBA starting sector
-// DL = Drive number
-// ES = Buffer segment
-// EBX = Buffer offset
-// ECX = Sectors count
 
 TEMP_BUFFER_SEG = 0x7000
 BYTES_PER_SECT  = 512
