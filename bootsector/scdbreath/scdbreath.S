@@ -19,13 +19,19 @@
 # .endif
 
 .code16
+
 /*
 ** Bootcode second breath
 */
 
-.section .text.boot, "ax"
+.section .text.boothook, "ax"
 
 _scdbreath:
+    movw $_bootms, %si
+    call printstr
+g:
+    jmp g
+
     popw %ax # partitio n
     popw %dx # drive nbr
     movl %edx, drive_number
@@ -35,12 +41,12 @@ _scdbreath:
     calll loadGdtBRealmode
     cli
 
-    mov $_booterror_rd, %esi
-    mov $2, %eax
-    mov $0x8000, %ebx
-    mov $62, %ecx
-    call _rd_xsectors
-    jc booterror
+    #mov $_booterror_rd, %esi
+    #mov $2, %eax
+    #mov $0x8000, %ebx
+    #mov $62, %ecx
+    #call _rd_xsectors
+    #jc booterror
 
     movw $_bootms, %si
     call printstr
@@ -53,7 +59,7 @@ booterror:
     call printstr
     xorw %ax, %ax
     int $0x16
-    jmp bioskill
+    jmp biosKill
 
 printstr:
     lodsb
@@ -66,17 +72,18 @@ printstr:
 .endprint:
     ret
 
-.code16
+biosKill:
+    int $0x19 # BIOS poweroff
+    ljmp $0xf000,$0xfff0 # case error reset code
 
-.section .data.boot, "awd"
-_bootms: .asciz "\n\rwe are done"
 
+_bootms: .asciz "we are done\n"
+_booterror: .asciz "Error occured"
 
 /*
 ** GDT32
 */
 
-.section .data.boot, "awd"
 .balign 8
 _bootgdt32Desc:
     .word   _bootgdt32_end - _bootgdt32 - 1
@@ -139,7 +146,6 @@ loadGdtBRealmode:
 ** Checkup A20
 */
 
-.section .text.boot, "ax"
 _checkA20:
     pushf
     pushw %ds
