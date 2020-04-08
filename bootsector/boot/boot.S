@@ -92,7 +92,7 @@ biosKill:
     ljmp $0xf000,$0xfff0 # case error reset code
 
 scdbreathpr: .asciz " *\n\r* SecondBreath legacy bootloader\n\r *\n\nPress any key to boot..."
-_error: .asciz "Error occured while reading disk..."
+_error: .asciz "Error occured while loading bootloader..."
 
 lba_struct:
 .dap:      .byte  0x10

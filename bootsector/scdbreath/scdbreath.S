@@ -29,6 +29,8 @@ _scdbreath:
     movw $_bootms, %si
     call printstr
 
+hg: jmp hg
+
     ljmp $0x8, $pm32entry
 
 booterror:

@@ -1,5 +1,5 @@
  #
-# Simple Makefile to compile our booloader
+# Simple Makefile to compile our bootloader
  #
 
 BUILD		:=	build
@@ -18,10 +18,14 @@ LINKER		:=	bootsector/scdbreath.ld
 
 RAWBIN		:=	scdbreath.bin
 
-LNKFLAGS	=	-n						\
-				-T $(LINKER)			\
-				-o $(RAWBIN)			\
-				--oformat binary		\
+LNKFLAGS	=	-n							\
+				-T $(LINKER)				\
+				-o $(RAWBIN)				\
+				-z max-page-size=0x1000		\
+				--oformat binary			\
+
+LNKFLAGS	+=	--print-map			\
+				--cref				\
 
 SRCDIR		:=	$(addprefix bootsector/, 	\
 							boot			\
@@ -29,12 +33,14 @@ SRCDIR		:=	$(addprefix bootsector/, 	\
 							scdbreath		\
 				)
 
+SRCDIR 		+=	krn
+
 SOURCES		:=	$(wildcard $(addsuffix /*$(ASMEXT), $(SRCDIR)))
 
 OBJECTS		:=	$(patsubst %$(ASMEXT), $(BUILD)/%$(OBJEXT), $(SOURCES))
 
 
-all:	checkup	$(RAWBIN)
+all:	config	$(RAWBIN)
 
 clean:
 	@rm -rf	$(BUILD)
@@ -56,7 +62,7 @@ $(BUILD)/%$(OBJEXT): %$(ASMEXT)
 	@$(GAS) $(GASFLAGS) -c $< -o $@
 	@-echo "    AS    $@"
 
-checkup:
+config:
 ifeq ($(arch), x86)
     GASFLAGS	+= --32
     LNKFLAGS	+= -m elf_i386
