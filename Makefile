@@ -18,7 +18,7 @@ LINKER		:=	bootsector/scdbreath.ld
 
 RAWBIN		:=	scdbreath.bin
 
-LNKFLAGS	:=	-n						\
+LNKFLAGS	=	-n						\
 				-T $(LINKER)			\
 				-o $(RAWBIN)			\
 				--oformat binary		\
@@ -57,10 +57,12 @@ $(BUILD)/%$(OBJEXT): %$(ASMEXT)
 	@-echo "    AS    $@"
 
 checkup:
-ifeq ($(lvl), core)
-    GASFLAGS	+= --defsym scdbreath=0
-else ifeq ($(lvl), scdbreath)
-    GASFLAGS	+= --defsym scdbreath=1
+ifeq ($(arch), x86)
+    GASFLAGS	+= --32
+    LNKFLAGS	+= -m elf_i386
+else ifeq ($(arch), x64)
+    LNKFLAGS	+= -m elf_x86_64
 else
-    GASFLAGS	+= --defsym	scdbreath=0
+    GASFLAGS	+= --32
+    LNKFLAGS	+= -m elf_i386
 endif

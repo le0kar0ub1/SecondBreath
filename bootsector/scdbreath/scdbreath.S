@@ -1,23 +1,3 @@
-# /* Read disk sector */
-#     movl $8, %eax
-#     xorb %dh, %dh
-#     movb $0x02, %ah
-#     movw $0x0002, %cx
-#     movw $__BOOT_SCDBREATH_START, %bx
-#     int  $0x13
-# 
-#     /* Check for errors */
-#     mov $1, %ah
-#     mov drive_number, %dl
-#     int $0x13
-#     mov $_booterror_rd, %si
-#     jnz booterror
-# 
-#     /* jump into the second stage of our bootloader */
-# .if scdbreath == 1
-#     jmp _scdbreath
-# .endif
-
 .code16
 
 /*
@@ -26,15 +6,13 @@
 
 .section .text.boothook, "ax"
 
+
+# Top of the stack contain drive number
 _scdbreath:
+    pop %dx
+    push %dx
     movw $_bootms, %si
     call printstr
-g:
-    jmp g
-
-    popw %ax # partitio n
-    popw %dx # drive nbr
-    movl %edx, drive_number
 
     call _enableA20
 

@@ -5,13 +5,14 @@
 
 .equ RELOCATED, 0x0600
 
+/*
+** The bootloader entry point
+** We just set load the rest of our bootloder
+*/
+
 .global _bootloader
 
 .section .bootloader, "ax"
-
-.macro SYMRELOC sym
-    $(\sym - 0x7C00 + 0x0600)
-.endm
 
 _bootloader:
     ljmp $BOOTSEG, $._bootloader
@@ -28,28 +29,42 @@ _bootloader:
 
     mov $__BOOT_SECTOR_START, %sp
 
-    pushw %dx # BIOS drive information
+    push %dx # BIOS drive information
 
     sti
 
-    movw $0x1, .rsectors
+    mov $scdbreathpr, %si
+    call bprintstr
+
+    xorb %ah, %ah
+    int $0x16
+
+    /*
+    ** We load the totality of our stage2 bootloader here 
+    ** no security if overlaps occured -> fatal 
+    */
+    movw $__BOOT_SECTOR_LOAD_SIZE, %cx
     movw $0x7E00, .tgt_off
+    clc
+loadXsize:
+    push %cx
+    movw $1, .rsectors
     movw $1, .addrlow
     
     xor %esi, %esi
     movw $lba_struct, %si
     mov $0x42, %ah
-    clc
     int $0x13
     jc perror
 
-    jmp 0x7E00
+    pop %cx
+    addw $0x200, .tgt_off
+    loop loadXsize
 
-    mov $scdbreathpr, %si
-    call bprintstr
+    jmp 0x7E00 # jump to our second breath bootloader
 
-hang:
-    jmp hang
+    /* unreachable code */
+    jmp biosKill
 
 /* Tools */
 bprintstr:
@@ -76,8 +91,8 @@ biosKill:
     int $0x19 # BIOS poweroff
     ljmp $0xf000,$0xfff0 # case error reset code
 
-scdbreathpr: .asciz "hello from secondbreath legacy bootloader"
-_error: .asciz "Error occured"
+scdbreathpr: .asciz " *\n\r* SecondBreath legacy bootloader\n\r *\n\nPress any key to boot..."
+_error: .asciz "Error occured while reading disk..."
 
 lba_struct:
 .dap:      .byte  0x10
