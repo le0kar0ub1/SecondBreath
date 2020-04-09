@@ -43,13 +43,13 @@ _bootloader:
     ** We load the totality of our stage2 bootloader here 
     ** no security if overlaps occured -> fatal 
     */
-    movw $__BOOT_SECTOR_LOAD_SIZE, %cx
+    movw $__BOOT_SECTOR_BLK_NBR, %cx
     movw $0x7E00, .tgt_off
     clc
 loadXsize:
     push %cx
     movw $1, .rsectors
-    movw $1, .addrlow
+    addw $1, .addrlow
     
     xor %esi, %esi
     movw $lba_struct, %si

@@ -4,61 +4,55 @@
 ** Bootcode second breath
 */
 
-.section .text.boothook, "ax"
+.global loadperror
+.global loadprintstr
 
+.section .text.boothook, "ax"
 
 # Top of the stack contain drive number
 _scdbreath:
     pop %dx
     push %dx
-    movw $_bootms, %si
-    call printstr
 
     call _enableA20
 
     calll loadGdtBRealmode
-    cli
 
-    #mov $_booterror_rd, %esi
-    #mov $2, %eax
-    #mov $0x8000, %ebx
-    #mov $62, %ecx
-    #call _rd_xsectors
-    #jc booterror
+    call loadkernel
 
     movw $_bootms, %si
-    call printstr
+    call loadprintstr
 
 hg: jmp hg
 
     ljmp $0x8, $pm32entry
 
-booterror:
-    call printstr
+loadperror:
+    call loadprintstr
     mov $_booterror, %si
-    call printstr
+    call loadprintstr
     xorw %ax, %ax
     int $0x16
-    jmp biosKill
+    jmp bioskill
 
-printstr:
+loadprintstr:
     lodsb
     andb %al, %al
-    jz   .endprint
+    jz   .endpr
     movb $0xe, %ah
     movw $7, %bx
     int  $0x10
-    jmp  printstr
-.endprint:
+    jmp  loadprintstr
+.endpr:
     ret
 
-biosKill:
+bioskill:
     int $0x19 # BIOS poweroff
     ljmp $0xf000,$0xfff0 # case error reset code
 
 
-_bootms: .asciz "we are done\n"
-_booterror: .asciz "Error occured"
+_bootms: .asciz "\r\nKernel loaded successfuly :)"
+_booterror: .asciz "\n\r  Press any key to reboot..."
 
 /*
 ** GDT32
