@@ -16,18 +16,22 @@ _scdbreath:
 
     call _enableA20
 
-    calll loadGdtBRealmode
-
     pop %dx
     push %dx
     call loadkernel
 
+    call kill_motor
+
+    call loadGdtBRealmode
+
     movw $_bootms, %si
     call loadprintstr
 
-hg: jmp hg
-
+    #ljmp $0x0, $pm32entry
     ljmp $0x8, $pm32entry
+
+hang:
+    jmp hang
 
 loadperror:
     call loadprintstr
@@ -70,19 +74,6 @@ _bootgdt32:
     .quad   0x00cf92000000ffff  /* __KERNEL_DS */
 _bootgdt32_end:
 
-/* kernel informations */
-scdbreath_bootloader:
-.magic: 
-    .long   0xF0C41E17  /* scdbreath magic */
-kernel_size:
-    .long   0x00000000  /* kernel image size */
-kernel_load:
-    .long   0x00000000  /* kernel load addr */
-drive_number:
-    .long   0x00000000  /* boot drive number */
-setup_sectors:
-    .long   0x0000000A  /* bootloader size in 512 byte blocks */
-
 /*
 ** flushing gdt load for big real mode
 */
@@ -110,12 +101,12 @@ loadGdtBRealmode:
     andb  $0xFE, %al
     movl  %eax, %cr0
 
-    popw  %fs
-    popw  %gs
-    popw  %es
-    popw  %ds
+    # popw  %fs
+    # popw  %gs
+    # popw  %es
+    # popw  %ds
     sti
-    retl
+    ret
 
 
 /*

@@ -44,10 +44,7 @@ loadXsize:
     pop %cx
     loop loadXsize
 
-    # mov $0x10000, %esi
-    # jmp *%esi
-    ljmp $0x1000, $0x0
-    #ljmp  $0x0, $0x9000
+    #ljmp $0x1000, $0x0
 
     ret
 
