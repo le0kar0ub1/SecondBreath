@@ -2,9 +2,10 @@
 
 .global _start
 
-.section .text
+.section .krnhook, "ax"
 _start:
     mov $working, %esi
+    sub $0xC0000000, %esi
     call directPrint
 
 hang:

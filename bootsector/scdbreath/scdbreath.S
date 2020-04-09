@@ -22,13 +22,21 @@ _scdbreath:
 
     call kill_motor
 
-    call loadGdtBRealmode
+    calll loadGdtBRealmode
 
-    movw $_bootms, %si
-    call loadprintstr
+    /* Reset cursor */
+    movw $0x2, %ax
+    movw $0x0, %dx
+    int  $0x10
 
-    #ljmp $0x0, $pm32entry
-    ljmp $0x8, $pm32entry
+    /* Clear Screen */
+    movw $0x600, %ax
+    movb $0x7, %bh
+    xorw %cx, %cx
+    movw $0x184F, %dx
+    int $0x10
+
+    ljmp $0x0, $pm32entry
 
 hang:
     jmp hang
@@ -56,8 +64,6 @@ bioskill:
     int $0x19 # BIOS poweroff
     ljmp $0xf000,$0xfff0 # case error reset code
 
-
-_bootms: .asciz "\r\nKernel loaded successfuly :)"
 _booterror: .asciz "\n\r  Press any key to reboot..."
 
 /*
@@ -101,12 +107,12 @@ loadGdtBRealmode:
     andb  $0xFE, %al
     movl  %eax, %cr0
 
-    # popw  %fs
-    # popw  %gs
-    # popw  %es
-    # popw  %ds
+    popw  %fs
+    popw  %gs
+    popw  %es
+    popw  %ds
     sti
-    ret
+    retl
 
 
 /*

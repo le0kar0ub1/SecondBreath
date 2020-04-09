@@ -14,8 +14,6 @@ OBJEXT		:=	.o
 
 ASMEXT		:=	.S
 
-LINKER		:=	bootsector/scdbreath.ld
-
 RAWBIN		:=	$(BUILD)/scdbreath.bin
 
 LNKFLAGS	=	-n							\
@@ -63,12 +61,14 @@ $(BUILD)/%$(OBJEXT): %$(ASMEXT)
 	@-echo "    AS    $@"
 
 config:
-ifeq ($(arch), x86)
-    GASFLAGS	+= --32
-    LNKFLAGS	+= -m elf_i386
-else ifeq ($(arch), x64)
+ifeq ($(arch), x64)
+    GASFLAGS	+= --64
+    GASFLAGS	+= --defsym archsz=64
     LNKFLAGS	+= -m elf_x86_64
+    LINKER		=	arch/x64/scdbreath.ld
 else
     GASFLAGS	+= --32
+    GASFLAGS	+= --defsym archsz=32
     LNKFLAGS	+= -m elf_i386
+    LINKER		=	arch/x86/scdbreath.ld
 endif

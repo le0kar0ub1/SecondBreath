@@ -28,7 +28,7 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 | `0x200` - `0x8400`   | `0x7E00` - `0x10000` | Bootloader second breath
 | `0x10000` - `...`    | `0xC0010000` - `...` | Kernel
 
-# x64 MEMORY MAP
+# x64 MEMORY MAP (Not Implemented yet)
 
 | Binary Offset        | Virtual Address              | Description
 |----------------------|------------------------------|-------------

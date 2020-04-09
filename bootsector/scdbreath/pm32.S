@@ -5,10 +5,6 @@
 .section .text.boot, "ax"
 
 pm32entry:
-    int $0x19
-
-    popl %ecx
-
     cli
 
     movl %cr0, %eax
@@ -26,5 +22,5 @@ pm32entry:
 
 .code32
 pm_entry:
-    mov $0x10000, %ecx
+    V2P $_start, %ecx
     jmp *%ecx
