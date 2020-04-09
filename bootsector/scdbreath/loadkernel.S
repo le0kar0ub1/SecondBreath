@@ -40,11 +40,11 @@ loadXsize:
     movw %ax, %ds
     movw %ax, %es
 
+    addl $1, .src_blk
+
     pop %dx
     pop %cx
     loop loadXsize
-
-    #ljmp $0x1000, $0x0
 
     ret
 

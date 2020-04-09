@@ -4,6 +4,7 @@
 
 .section .krnhook, "ax"
 _start:
+    pop %eax /* kernel structure info */
     mov $working, %esi
     sub $0xC0000000, %esi
     call directPrint

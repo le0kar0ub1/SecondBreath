@@ -24,5 +24,6 @@ pm32entry:
 
 .code32
 pm_entry:
+/* transfer control to the Kernel */
     V2P $_start, %ecx
     jmp *%ecx

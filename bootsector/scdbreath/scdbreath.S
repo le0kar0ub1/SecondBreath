@@ -36,6 +36,9 @@ _scdbreath:
     movw $0x184F, %dx
     int $0x10
 
+    mov $structkinfo, %eax
+    push %eax
+
     ljmp $0x0, $pm32entry
 
 hang:

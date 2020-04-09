@@ -36,6 +36,11 @@ SECTIONS
         KEEP(*(.bioscall))
     } > boot
 
+    .init.info :
+    {
+        KEEP(*(.kinfo))
+    } > boot
+
     . = ALIGN(0x200);
     PROVIDE(__BOOT_SECTOR_BLK_NBR = ((. - __BOOT_SCDBREATH_START) / 0x200) + 1);
     PROVIDE(__BOOT_SECTOR_END  = .);
@@ -77,13 +82,8 @@ SECTIONS
     PROVIDE(__KERNEL_VIRT_END = .);
 
     . = ALIGN(0x200);
-    PROVIDE(__KERNEL_LBA_BLK_NBR = ((. - __KERNEL_VIRT_LINK) / 0x200) + 1);
+    PROVIDE(__KERNEL_LBA_BLK_NBR = ((. - __KERNEL_VIRT_LINK) / 0x200));
     PROVIDE(__KERNEL_SIZE = __KERNEL_PHYS_END - __KERNEL_PHYS_LINK);
-
-    /* 
-    ** We do not use C code for now so,
-    ** To be clean, if a section is not declared we DISCARD
-    */
 
     /DISCARD/ :
     { 
