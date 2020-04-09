@@ -25,8 +25,8 @@ LNKFLAGS	=	-n							\
 #LNKFLAGS	+=	--print-map			\
 				--cref				\
 
-SRCDIR		:=	$(addprefix bootsector/, 	\
-							boot			\
+SRCDIR		:=	$(addprefix boot/,			\
+							bootsector		\
 							bootools		\
 							scdbreath		\
 				)

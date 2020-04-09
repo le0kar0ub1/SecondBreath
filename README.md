@@ -20,7 +20,17 @@ Where `$ARCH` is the arch you want to target.
 
 Available are `x86` and `x64` (defaulting to x86 if unset).
 
-## x86 MEMORY MAP
+
+# Tree
+
+| Path     | Description             |
+|----------|-------------------------|
+| `arch`   | Arch-specific objects   |
+| `boot`   | The purposed bootloader |
+| `krn`    | A kernel entry          |
+
+
+## x86 Memory map
 
 | Binary Offset        | Virtual Address      | Description
 |----------------------|----------------------|-------------
@@ -28,13 +38,15 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 | `0x200` - `0x8400`   | `0x7E00` - `0x10000` | Bootloader second breath
 | `0x10000` - `...`    | `0xC0010000` - `...` | Kernel
 
-## x64 MEMORY MAP (Not Implemented yet)
+
+## x64 Memory map (not implemented yet)
 
 | Binary Offset        | Virtual Address              | Description
 |----------------------|------------------------------|-------------
 | `0x0` - `0x200`      | `0x7C00` - `0x7E00`          | DOS bootloader
 | `0x200` - `0x8400`   | `0x7E00` - `0x10000`         | Bootloader second breath
 | `0x10000` - `...`    | `0xFFFFFFFF80010000` - `...` | Kernel
+
 
 ## Bootloader work
 
@@ -45,6 +57,7 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 - [X] Load the totality of the kernel at `0x10000`
 - [ ] Setup some informations for kernel usage (ACPI/..)
 - [X] Transfer control to the kernel
+
 
 # Epilogue
 
