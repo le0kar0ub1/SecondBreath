@@ -18,6 +18,8 @@ _scdbreath:
 
     calll loadGdtBRealmode
 
+    pop %dx
+    push %dx
     call loadkernel
 
     movw $_bootms, %si

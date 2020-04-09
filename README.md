@@ -13,7 +13,3 @@ x86 DOS bootloader wroten in GNU syntax assembly.
 # build
 
 `make`
-
-# Some informations
-
-Because we are not savage people and `org` keyword isn't implemented on GNU assembly we need a linker script.

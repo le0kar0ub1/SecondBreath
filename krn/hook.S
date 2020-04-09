@@ -1,11 +1,12 @@
 .code16
 
+.global _start
+
 .section .text
 
 _start:
-    movb $0xE, %ah
-    movb $0x30, %al
-    int $0x10
+    int $0x19 # BIOS poweroff
+    ljmp $0xf000,$0xfff0 # case error reset code
 hang:
     jmp hang
 

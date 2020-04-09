@@ -10,12 +10,13 @@ loadkernel:
     movw $__KERNEL_LBA_BLK_NBR, %cx
     movw $0x0000, .tgt_seg
     movw $TMPBUFFER, .tgt_off
-    movw $__KERNEL_LBA_BLK_START, .src_blk
-    subw $1, .src_blk
+    movl $__KERNEL_LBA_BLK_START, .src_blk
     movw $1, .rsectors
 loadXsize:
     push %cx
-    
+    push %dx
+
+    xorb %dh, %dh
     xor %esi, %esi
     movw $lba_struct, %si
     mov $0x42, %ah
@@ -23,20 +24,32 @@ loadXsize:
     mov $_error, %si
     jc loadperror
 
-    #movw .tgt_off, %si
-    #movw .src_blk, %di
-    #imul $0x200, %di
-    #mov $0x200, %cx
-    #rep movsb
+    movw $0x900, %ax
+    movw %ax, %ds
+    movw $0x1000, %ax
+    movw %ax, %es
 
+    movl $0x0, %esi
+    movl .src_blk, %edi
+    subl $__KERNEL_LBA_BLK_START, %edi
+    imull $0x200, %edi
+    movl $0x200, %ecx
+    rep movsb
+
+    xorw %ax, %ax
+    movw %ax, %ds
+    movw %ax, %es
+
+    pop %dx
     pop %cx
-    addw $1, .src_blk
     loop loadXsize
 
-    call  0x10000
-    ret
+    # mov $0x10000, %esi
+    # jmp *%esi
+    ljmp $0x1000, $0x0
+    #ljmp  $0x0, $0x9000
 
-    jmp loadkernel
+    ret
 
 _error: .asciz "Error occured while loading kernel..."
 
