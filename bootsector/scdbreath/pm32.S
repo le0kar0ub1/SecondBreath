@@ -1,3 +1,5 @@
+.include "arch/boot.inc"
+
 .code16
 
 .global pm32entry

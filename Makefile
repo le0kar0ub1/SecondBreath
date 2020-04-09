@@ -8,7 +8,7 @@ GAS 		:=	as
 
 LNK			:=	ld
 
-GASFLAGS	=
+GASFLAGS	=	-I .
 
 OBJEXT		:=	.o
 
