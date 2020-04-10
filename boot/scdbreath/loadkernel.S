@@ -7,7 +7,7 @@
 .section .text.boot
 
 loadkernel:
-    xorw %cx, %cx
+    xor %ecx, %ecx
 loadXsize:
     push %cx
     push %dx
@@ -26,26 +26,17 @@ loadXsize:
     mov $_error, %si
     jc loadperror
 
-    movw $0x900, %ax
-    movw %ax, %ds
-
-    cmpw $128, %cx
-    jg increase
-
-    movw $0x1000, %ax
-    movw %ax, %es
-
+    movl $TMPBUFFER, %esi
     movl %ecx, %edi
-    imul $0x200, %edi
-
-transfer:
-    movl $0x0, %esi
+    imull $0x200, %edi
+    addl $0x10000, %edi
     movl $0x200, %ecx
-    rep movsb
-
-    xorw %ax, %ax
-    movw %ax, %ds
-    movw %ax, %es
+transfer:
+    movb (%esi), %al
+    movb %al, (%edi)
+    incl %esi
+    incl %edi
+    loop transfer
 
     pop %dx
     pop %cx
@@ -55,21 +46,6 @@ transfer:
     jne loadXsize
 
     ret
-
-
-/* 
-** INCREASE OUR SEGMENT
-*/
-increase:
-    movw $0xFFFF, %ax
-    movw %ax, %es
-
-    movl %ecx, %edi
-    sub $128, %edi
-    imul $0x200, %edi
-    movb $4, (%esi)
-
-    jmp transfer
 
 _error: .asciz "Error occured while loading kernel..."
 
