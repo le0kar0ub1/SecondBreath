@@ -1,8 +1,9 @@
 # SecondBreath
 
-x86 DOS bootloader wroten in GNU syntax assembly.
+x86 bootloader wroten in GNU syntax assembly.
 
 One of many minimal bootloader (which load the Kernel in higher half).
+
 
 # Dependencies
 
@@ -11,6 +12,7 @@ One of many minimal bootloader (which load the Kernel in higher half).
   * `as` (dev under V2.34)
 
   * `ld` (dev under V2.34)
+
 
 # Build
 
@@ -55,9 +57,18 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 - [X] Load the `GDT32`
 - [X] Enable `Protected Mode`
 - [X] Load the totality of the kernel at `0x10000`
-- [ ] Setup some informations for kernel usage (ACPI/..)
+- [ ] Setup some informations for kernel usage
 - [X] Transfer control to the kernel
 
+# About
+
+A kernel entry is provided in `krn` directory.
+
+To use this bootloader you must provide the classical symbol entry `_start`.
+
+The kernel is loaded in higher half but no memory mapping is provided by the bootloader.
+
+You must then use a `virtToPhys` operation on every absolute addressing.
 
 # Epilogue
 

@@ -1,3 +1,5 @@
+.include "arch/boot.inc"
+
 .code32
 
 .global _start
@@ -5,8 +7,7 @@
 .section .krnhook, "ax"
 _start:
     pop %eax /* kernel structure info */
-    mov $working, %esi
-    sub $0xC0000000, %esi
+    V2P $working, %esi
     call directPrint
 
 hang:
@@ -34,3 +35,8 @@ directPrint:
 
 .section .data
 working: .asciz "it's working <3"
+
+.section .bss
+stack_bottom:
+.lcomm stack, 0x10000
+stack_top:

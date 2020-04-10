@@ -7,14 +7,16 @@
 .section .text.boot
 
 loadkernel:
-    movw $__KERNEL_LBA_BLK_NBR, %cx
-    movw $0x0000, .tgt_seg
-    movw $TMPBUFFER, .tgt_off
-    movl $__KERNEL_LBA_BLK_START, .src_blk
-    movw $1, .rsectors
+    xorw %cx, %cx
 loadXsize:
     push %cx
     push %dx
+
+    movw $0x0000, .tgt_seg
+    movw $TMPBUFFER, .tgt_off
+    movl $__KERNEL_LBA_BLK_START, .src_blk
+    addw %cx, .src_blk
+    movw $1, .rsectors
 
     xorb %dh, %dh
     xor %esi, %esi
@@ -26,13 +28,18 @@ loadXsize:
 
     movw $0x900, %ax
     movw %ax, %ds
+
+    cmpw $128, %cx
+    jg increase
+
     movw $0x1000, %ax
     movw %ax, %es
 
+    movl %ecx, %edi
+    imul $0x200, %edi
+
+transfer:
     movl $0x0, %esi
-    movl .src_blk, %edi
-    subl $__KERNEL_LBA_BLK_START, %edi
-    imull $0x200, %edi
     movl $0x200, %ecx
     rep movsb
 
@@ -40,13 +47,29 @@ loadXsize:
     movw %ax, %ds
     movw %ax, %es
 
-    addl $1, .src_blk
-
     pop %dx
     pop %cx
-    loop loadXsize
+
+    incw %cx
+    cmpw $__KERNEL_LBA_BLK_NBR, %cx
+    jne loadXsize
 
     ret
+
+
+/* 
+** INCREASE OUR SEGMENT
+*/
+increase:
+    movw $0xFFFF, %ax
+    movw %ax, %es
+
+    movl %ecx, %edi
+    sub $128, %edi
+    imul $0x200, %edi
+    movb $4, (%esi)
+
+    jmp transfer
 
 _error: .asciz "Error occured while loading kernel..."
 
