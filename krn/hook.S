@@ -33,8 +33,6 @@ directPrint:
     pop %edi
     ret
 
-.fill 2000000, 1, 0
-
 .section .data
 working: .asciz "it's working <3"
 
