@@ -50,14 +50,14 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 | `0x10000` - `...`    | `0xFFFFFFFF80010000` - `...` | Kernel
 
 
-## Bootloader work
+## Bootloader steps
 
 - [X] Load the `stage 2` bootloader
 - [X] Enable `A20` by all means
-- [X] Load the `GDT32`
-- [X] Enable `Protected Mode`
+- [X] Load the `GDT`
 - [X] Load the totality of the kernel at `0x10000`
 - [ ] Setup some informations for kernel usage
+- [X] Enable `Protected Mode`
 - [X] Transfer control to the kernel
 
 # About
@@ -66,7 +66,7 @@ A kernel entry is provided in `krn` directory.
 
 To use this bootloader you must provide the classical symbol entry `_start`.
 
-The kernel is loaded in higher half but no memory mapping is provided by the bootloader.
+The kernel is loaded in higher half but no memory mapping is provided by the bootloader so far.
 
 You must then use a `virtToPhys` operation on every absolute addressing.
 
