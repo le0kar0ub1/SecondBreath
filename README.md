@@ -36,7 +36,7 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 
 | Binary Offset        | Virtual Address      | Description
 |----------------------|----------------------|-------------
-| `0x0` - `0x200`      | `0x7C00` - `0x7E00`  | DOS bootloader
+| `0x0` - `0x200`      | `0x7C00` - `0x7E00`  | DOS bootsector
 | `0x200` - `0x8400`   | `0x7E00` - `0x10000` | Bootloader second breath
 | `0x10000` - `...`    | `0xC0010000` - `...` | Kernel
 
@@ -45,7 +45,7 @@ Available are `x86` and `x64` (defaulting to x86 if unset).
 
 | Binary Offset        | Virtual Address              | Description
 |----------------------|------------------------------|-------------
-| `0x0` - `0x200`      | `0x7C00` - `0x7E00`          | DOS bootloader
+| `0x0` - `0x200`      | `0x7C00` - `0x7E00`          | DOS bootsector
 | `0x200` - `0x8400`   | `0x7E00` - `0x10000`         | Bootloader second breath
 | `0x10000` - `...`    | `0xFFFFFFFF80010000` - `...` | Kernel
 
