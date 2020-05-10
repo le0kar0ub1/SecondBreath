@@ -27,13 +27,13 @@ _bootloader:
     xorw %sp, %sp
     cld
 
-    mov $__BOOT_SECTOR_START, %sp
+    movw $__BOOT_SECTOR_START, %sp
 
-    push %dx # BIOS drive information
+    pushw %dx # BIOS drive information
 
     sti
 
-    mov $scdbreathpr, %si
+    movw $scdbreathpr, %si
     call bprintstr
 
     xorb %ah, %ah
@@ -47,13 +47,13 @@ _bootloader:
     movw $0x7E00, .tgt_off
     clc
 loadXsize:
-    push %cx
+    pushw %cx
     movw $1, .rsectors
     addw $1, .addrlow
     
-    xor %esi, %esi
+    xorl %esi, %esi
     movw $lba_struct, %si
-    mov $0x42, %ah
+    movb $0x42, %ah
     int $0x13
     jc perror
 
@@ -79,7 +79,7 @@ bprintstr:
     ret
 
 perror:
-    mov $_error, %si
+    movw $_error, %si
     call bprintstr
 reDie:
     xorb %ah, %ah

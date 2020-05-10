@@ -34,7 +34,7 @@ directPrint:
     ret
 
 .section .data
-working: .asciz "it's working <3"
+working: .asciz "Boot phase achieved <3"
 
 .section .bss
 stack_bottom:
