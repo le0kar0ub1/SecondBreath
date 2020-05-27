@@ -2,7 +2,7 @@
 
 x86 bootloader wroten in GNU syntax assembly.
 
-One of many 2 stage minimal bootloader (which load the Kernel in higher half).
+One of many 2 stages minimal bootloader (which load the Kernel in higher half).
 
 
 # Dependencies
