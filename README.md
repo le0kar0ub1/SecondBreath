@@ -70,6 +70,8 @@ The kernel is loaded in higher half but no memory mapping is provided by the boo
 
 You must then use a `virtToPhys` operation on every absolute addressing.
 
+![runtime](doc/runtime.png)
+
 # Epilogue
 
 Just for the fun.
